@@ -1,0 +1,8 @@
+.success {
+	color: green;
+	padding-right: 20px;
+}
+.error {
+	color: red;
+	padding-right: 20px;
+}
