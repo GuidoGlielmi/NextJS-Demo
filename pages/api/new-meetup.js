@@ -9,6 +9,7 @@ import { MongoClient } from 'mongodb';
 async function handler({ body, method }, res) {
 	if (method === 'POST') {
 		MongoClient.connect(process.env.MONGODB_ACCOUNT, (error, client) => {
+			//mongo needs a list IP's to give access to
 			if (error) {
 				console.log('🔴 Database error: ', error);
 			} else {
