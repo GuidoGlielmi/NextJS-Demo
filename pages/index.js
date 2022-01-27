@@ -28,7 +28,7 @@ https://nextjs.org/docs/basic-features/static-file-serving
 
 */
 import Head from 'next/head';
-import Layout, { siteTitle } from '../components/Layout';
+import Layout, { siteTitle } from '../Components/Layout';
 import utilStyles from '../styles/utils.module.css';
 import { getSortedPostsData } from '../lib/posts';
 
