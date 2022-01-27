@@ -1,7 +1,9 @@
-import Detail from "../../Components/meetups/Details";
+import Detail from '../../Components/meetups/Details';
+import { MongoClient } from 'mongodb';
+import { writeData, getData } from '../../lib/posts';
 
-const MeetUp = ({ img, id }) => {
-	return <Detail img={img}></Detail>;
+const MeetUp = ({ meetup }) => {
+	return <Detail meetup={meetup}></Detail>;
 };
 
 export async function getStaticPaths() {
@@ -9,35 +11,34 @@ export async function getStaticPaths() {
 	como es necesario PRE-GENERAR todas las página en el build,
 	también es necesario feedearle todos los id's necesarios para ello,
 	dado que es la data dinámica que se está utilizando
+	Aqui no se puede acceder al ID que se solicita pq no se puede preveer eso.
 	*/
-
-	return {
-		fallback: false,
-		paths: [
-			{
-				params: {
-					meetupId: "m1",
-					// meetupId tiene que tener el mismo nombre que el archivo
-					// por lo que el archivo no puede tener " - "
-				},
-			},
-			{
-				params: {
-					meetupId: "m2",
-				},
-			},
-		],
-	};
+	try {
+		const client = await MongoClient.connect(process.env.MONGODB_ACCOUNT);
+		console.log('🟢 Database connected');
+		const db = client.db();
+		const meetupsCollection = db.collection('meetups');
+		const results = await meetupsCollection.find().toArray();
+		const resultsWithId = results.map((rwi) => ({ ...rwi, id: rwi._id.toString() }));
+		const resultsWithIdJson = JSON.stringify(resultsWithId);
+		writeData(resultsWithIdJson);
+		return {
+			fallback: false,
+			paths: resultsWithId.map(({ id }) => ({ params: { meetupId: id } })),
+		};
+	} catch (e) {
+		console.log(e);
+	}
 }
 
-export async function getStaticProps(context) {
+export async function getStaticProps({ params: { meetupId } }) {
 	// fetch data the a single meetup
-	const meetupId = context.params.meetupId;
-	console.log(meetupId); //esto no va a loguearse en el browser, sólo en VS
+	//console.log(meetupId); //esto no va a loguearse en el browser, sólo en VS
+	//recién aca se puede acceder a los parametros del endpoint solicitado
+	const meetup = getData(meetupId);
 	return {
 		props: {
-			img: "https://interactive-examples.mdn.mozilla.net/media/cc0-images/grapefruit-slice-332-332.jpg",
-			id: meetupId,
+			meetup,
 		},
 	};
 }
