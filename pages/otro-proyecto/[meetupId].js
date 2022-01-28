@@ -25,7 +25,6 @@ export function getStaticPaths() {
 	*/
 	try {
 		const results = getAllData();
-		console.log(results);
 		return {
 			fallback: 'blocking',
 			// para no tener que crear html de fallback hay que usar 'blocking'
@@ -41,7 +40,6 @@ export function getStaticProps({ params: { meetupId } }) {
 	//console.log(meetupId); //esto no va a loguearse en el browser, sólo en VS
 	//recién aca se puede acceder a los parametros del endpoint solicitado
 	const meetup = getData(meetupId);
-	console.log(meetup, 'getStaticProps');
 	return {
 		props: {
 			meetup: meetup ? meetup : { _id: '', title: '', image: '', address: '', description: '' },
