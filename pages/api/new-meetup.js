@@ -9,30 +9,22 @@ import { MongoClient } from 'mongodb';
 
 async function handler({ body, method }, res) {
 	if (method === 'POST') {
-		MongoClient.connect(process.env.MONGODB_ACCOUNT, (error, client) => {
+		try {
+			const client = await MongoClient.connect(process.env.MONGODB_ACCOUNT);
 			//mongo needs a list IP's to give access to
-			if (error) {
-				console.log('🔴 Database error: ', error);
-			} else {
-				console.log('🟢 Database connected');
-				const db = client.db();
-				const meetupsCollection = db.collection('meetups');
-				meetupsCollection
-					.insertOne(body)
-					.then((data) => {
-						client.close();
-						//writeData(getAllData().push(body));
-						/*esta funcion no se puede ejecutar en una parte que no sea server side
-						dado que se necesita ejecutar en el client side, y todo lo que sea server side 
-						deja de estar disponible en el client side
-						*/
-						return res.json({ message: 'Success!', data });
-					})
-					.catch((err) => {
-						console.log(err);
-					});
-			}
-		});
+			console.log('🟢 Database connected');
+			const db = client.db();
+			const meetupsCollection = db.collection('meetups');
+			const data = await meetupsCollection.insertOne(body);
+			client.close();
+			/* writeData(getAllData().push(body)); esta funcion no se puede ejecutar
+			en una parte que no sea server side	dado que se necesita ejecutar en el client side,
+			y todo lo que sea server side deja de estar disponible en el client side
+			*/
+			return res.json({ message: 'Success!', data });
+		} catch (err) {
+			return res.json({ message: err.message });
+		}
 	}
 }
 

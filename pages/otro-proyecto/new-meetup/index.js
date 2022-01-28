@@ -14,12 +14,21 @@ const NewMeetUpPage = () => {
 				body: JSON.stringify(data),
 				headers: { 'Content-Type': 'application/json' },
 			});
-			const jsonResponse = await rawResponse.json();
-			if (jsonResponse.message === 'Success!') {
-				setResultModal({ show: true, message: jsonResponse.message, title: 'Success' });
+			if (rawResponse.status !== 201 && rawResponse.status !== 200 && rawResponse.status !== 204) {
+				const jsonResponse = await rawResponse.json();
+				throw new Error({
+					message: jsonResponse.message,
+					status: `${rawResponse.status} ${rawResponse.statusText}`,
+				});
 			}
+			const jsonResponse = await rawResponse.json();
+			setResultModal({
+				show: true,
+				message: jsonResponse.message,
+				title: `${rawResponse.status} ${rawResponse.statusText}`,
+			});
 		} catch (error) {
-			setResultModal({ show: true, message: error.message, title: 'Error' });
+			setResultModal({ show: true, message: error.message, title: error.status });
 		}
 	}
 
