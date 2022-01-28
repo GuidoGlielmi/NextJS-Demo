@@ -1,8 +1,19 @@
 import MeetUpList from '../../Components/meetups/List';
 import { MongoClient } from 'mongodb';
+import Head from 'next/head';
 
 const HomePage = ({ meetups }) => {
-	return <MeetUpList meetups={meetups} />;
+	return (
+		<>
+			<Head>
+				<title>NextJS</title>
+				<link rel='icon' href='/favicon.ico' />
+				<meta name='description' content='Learn how to build a personal website using Next.js' />
+				<meta name='twitter:card' content='summary_large_image' />
+			</Head>
+			<MeetUpList meetups={meetups} />
+		</>
+	);
 };
 /* 
 export async function getServerSideProps(context) {
@@ -41,7 +52,7 @@ export async function getStaticProps() {
 					id: _id.toString(),
 				})),
 			},
-			//revalidate: 20,
+			revalidate: 5,
 		};
 	} catch (e) {
 		console.log(e);
