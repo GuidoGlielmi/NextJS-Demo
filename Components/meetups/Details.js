@@ -5,7 +5,7 @@ const Details = ({ meetup }) => {
 		<div>
 			<Image priority src={meetup.image} height={144} width={144} alt='tuvieja' layout='responsive' />
 			<h2>{meetup.title}</h2>
-			<address>{meetup.title}</address>
+			<address>{meetup.address}</address>
 			<p>{meetup.description}</p>
 		</div>
 	);

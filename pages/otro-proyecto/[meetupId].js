@@ -1,9 +1,10 @@
 import Detail from '../../Components/meetups/Details';
-import { MongoClient } from 'mongodb';
-import { writeData, getData } from '../../lib/posts';
+//import { MongoClient } from 'mongodb';
+import { getAllData, getData } from '../../lib/posts';
 import Head from 'next/head';
 
 const MeetUp = ({ meetup }) => {
+	console.log(meetup);
 	return (
 		<>
 			<Head>
@@ -15,7 +16,7 @@ const MeetUp = ({ meetup }) => {
 	);
 };
 
-export async function getStaticPaths() {
+export function getStaticPaths() {
 	/*
 	como es necesario PRE-GENERAR todas las página en el build,
 	también es necesario feedearle todos los id's (endpoints) necesarios para ello,
@@ -23,16 +24,12 @@ export async function getStaticPaths() {
 	Aqui no se puede acceder al ID que se solicita pq no se puede preveer eso.
 	*/
 	try {
-		const client = await MongoClient.connect(process.env.MONGODB_ACCOUNT);
-		console.log('🟢 Database connected');
-		const db = client.db();
-		const meetupsCollection = db.collection('meetups');
-		const results = await meetupsCollection.find().toArray();
-		writeData(JSON.stringify(results));
+		const results = getAllData();
+		console.log(results);
 		return {
 			fallback: 'blocking',
 			// para no tener que crear html de fallback hay que usar 'blocking'
-			paths: results.map(({ _id }) => ({ params: { meetupId: _id.toString() } })),
+			paths: results.map(({ _id }) => ({ params: { meetupId: _id } })),
 		};
 	} catch (e) {
 		console.log(e);
@@ -44,9 +41,10 @@ export function getStaticProps({ params: { meetupId } }) {
 	//console.log(meetupId); //esto no va a loguearse en el browser, sólo en VS
 	//recién aca se puede acceder a los parametros del endpoint solicitado
 	const meetup = getData(meetupId);
+	console.log(meetup, 'getStaticProps');
 	return {
 		props: {
-			meetup,
+			meetup: meetup ? meetup : { _id: '', title: '', image: '', address: '', description: '' },
 		},
 	};
 }

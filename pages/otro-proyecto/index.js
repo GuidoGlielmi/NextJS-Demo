@@ -1,6 +1,7 @@
 import MeetUpList from '../../Components/meetups/List';
 import { MongoClient } from 'mongodb';
 import Head from 'next/head';
+import { writeData } from '../../lib/posts';
 
 const HomePage = ({ meetups }) => {
 	return (
@@ -42,6 +43,7 @@ export async function getStaticProps() {
 		const db = client.db();
 		const meetupsCollection = db.collection('meetups');
 		const results = await meetupsCollection.find().toArray();
+		writeData(results);
 		return {
 			props: {
 				meetups: results.map(({ title, address, image, description, _id }) => ({
