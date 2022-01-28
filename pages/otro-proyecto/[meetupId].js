@@ -28,12 +28,11 @@ export async function getStaticPaths() {
 		const db = client.db();
 		const meetupsCollection = db.collection('meetups');
 		const results = await meetupsCollection.find().toArray();
-		const resultsWithId = results.map((rwi) => ({ ...rwi, id: rwi._id.toString() }));
-		const resultsWithIdJson = JSON.stringify(resultsWithId);
-		writeData(resultsWithIdJson);
+		writeData(JSON.stringify(results));
 		return {
 			fallback: 'blocking',
-			paths: resultsWithId.map(({ id }) => ({ params: { meetupId: id } })),
+			// para no tener que crear html de fallback hay que usar 'blocking'
+			paths: results.map(({ _id }) => ({ params: { meetupId: _id.toString() } })),
 		};
 	} catch (e) {
 		console.log(e);
