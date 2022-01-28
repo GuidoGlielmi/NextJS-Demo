@@ -19,7 +19,6 @@ async function handler({ body, method }, res) {
 				meetupsCollection
 					.insertOne(body)
 					.then((data) => {
-						console.log(data);
 						client.close();
 						return res.json({ message: 'Success!', data });
 					})

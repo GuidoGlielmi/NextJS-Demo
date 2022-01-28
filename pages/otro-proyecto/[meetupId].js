@@ -32,7 +32,7 @@ export async function getStaticPaths() {
 		const resultsWithIdJson = JSON.stringify(resultsWithId);
 		writeData(resultsWithIdJson);
 		return {
-			fallback: true,
+			fallback: 'blocking',
 			paths: resultsWithId.map(({ id }) => ({ params: { meetupId: id } })),
 		};
 	} catch (e) {
